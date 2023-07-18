@@ -21,7 +21,7 @@ default_args = {
     description='Load and transform data in Redshift with Airflow',
     start_date=pendulum.datetime(2018, 11, 1, 0, 0, 0, 0),
     end_date=pendulum.datetime(2018, 11, 3, 0, 0, 0, 0),
-    schedule_interval='@daily',
+    schedule_interval='@hourly',
     max_active_runs=1
 )
 def final_project():
@@ -124,13 +124,18 @@ def final_project():
 
     end_operator = DummyOperator(task_id='End_execution')
 
-    start_operator >> stage_events_to_redshift >> load_songplays_table
-    start_operator >> stage_songs_to_redshift >> load_songplays_table
-
-    load_songplays_table >> load_song_dimension_table >> run_quality_checks >> end_operator
-    load_songplays_table >> load_artist_dimension_table >> run_quality_checks >> end_operator
-    load_songplays_table >> load_time_dimension_table >> run_quality_checks >> end_operator
-    load_songplays_table >> load_user_dimension_table >> run_quality_checks >> end_operator
-
+    start_operator >> stage_events_to_redshift
+    start_operator >> stage_songs_to_redshift
+    stage_events_to_redshift >> load_songplays_table
+    stage_songs_to_redshift >> load_songplays_table
+    load_songplays_table >> load_user_dimension_table
+    load_songplays_table >> load_song_dimension_table
+    load_songplays_table >> load_artist_dimension_table
+    load_songplays_table >> load_time_dimension_table
+    load_user_dimension_table >> run_quality_checks
+    load_song_dimension_table >> run_quality_checks
+    load_artist_dimension_table >> run_quality_checks
+    load_time_dimension_table >> run_quality_checks
+    run_quality_checks >> end_operator
 
 final_project_dag = final_project()
