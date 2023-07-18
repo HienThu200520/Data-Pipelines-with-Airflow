@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS public.staging_events (
     status INT,
     ts BIGINT,
     useragent VARCHAR(256),
+    start_time TIMESTAMP,
     userid INT
 );
 
