@@ -128,14 +128,8 @@ def final_project():
     start_operator >> stage_songs_to_redshift
     stage_events_to_redshift >> load_songplays_table
     stage_songs_to_redshift >> load_songplays_table
-    load_songplays_table >> load_user_dimension_table
-    load_songplays_table >> load_song_dimension_table
-    load_songplays_table >> load_artist_dimension_table
-    load_songplays_table >> load_time_dimension_table
-    load_user_dimension_table >> run_quality_checks
-    load_song_dimension_table >> run_quality_checks
-    load_artist_dimension_table >> run_quality_checks
-    load_time_dimension_table >> run_quality_checks
+    load_songplays_table >> [load_user_dimension_table, load_song_dimension_table, load_artist_dimension_table, load_time_dimension_table]
+    [load_user_dimension_table, load_song_dimension_table, load_artist_dimension_table, load_time_dimension_table] >> run_quality_checks
     run_quality_checks >> end_operator
 
 final_project_dag = final_project()
